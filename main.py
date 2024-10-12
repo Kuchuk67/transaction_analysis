@@ -1,3 +1,6 @@
-from typing import Any
+def main():
+    pass
 
-x:Any = ''
+
+if __name__ == "__main__":
+    main()
