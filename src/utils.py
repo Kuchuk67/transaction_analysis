@@ -8,9 +8,11 @@ import datetime
 def read_xls(file_name: str) -> (str, Iterable):
     '''
     Читает файл xlsx c транзакциями,
+    - Отдает только статус == 'OK'
     - Замена NAN на пробелы
     - Переименовывает столбцы на английский
     - Проверяет наличие нужных колонок
+    -
     Пример:
     status,x = read_xls('operations.xlsx')
     :param file_name:
@@ -46,15 +48,20 @@ def read_xls(file_name: str) -> (str, Iterable):
                              }
 
     excel_data.rename(columns=dict_translation_head, inplace=True)
+
+    print(excel_data)
     # проверка наличия нужных колонок
     important_columns = ["transaction_date", "status", "amount"]
     if set(important_columns).issubset(excel_data.columns):
         status = 'Ok'
+        #excel_data
+        dict_data = excel_data.loc[ excel_data.status == 'OK' ].to_dict(orient="records")
+
     else:
         status = 'not important columns'
-        excel_data = None
+        dict_data = None
 
-    return status, excel_data
+    return status, dict_data
 
 
 
@@ -104,3 +111,37 @@ def financial_period(data_end: str ='' , period: str='M' ) -> tuple[str, str,]:
 #data_start, data_end =(financial_period('12.10.2024', 'N'))
 #print(data_start, data_end)
 
+def data_formater(date_trans: str) -> str:
+    return f'{date_trans[6:10]}.{date_trans[3:5]}.{date_trans[0:2]}'
+
+def filter_transaction(transactions: list, data_start: str, data_end: str) -> list:
+    '''
+    Возращает новый список словарей транзакций отфильтрованных по датам
+    :param transactions:  список со словарями транзакций
+    :param data_start:   дата начала выборки 01.01.2022
+    :param data_end:    дата конца выборки  31.12.2022
+    :return: список со словарями транзакций указанного периода
+    '''
+
+    transactions_filter_data = []
+    data_start = data_formater(data_start)
+
+    data_end = data_formater(data_end)
+
+    for transaction in transactions:
+        data_transaction = data_formater( transaction.get('transaction_date'))
+
+        if  data_transaction < data_start:
+            break
+
+        if data_start <= data_transaction <= data_end:
+            transactions_filter_data.append(transaction)
+
+
+    return transactions_filter_data
+
+
+status,x = read_xls('operations.xlsx')
+#print(x[0])
+q = filter_transaction(x,'14.11.2021','14.11.2021')
+print(*q, sep='\n')
