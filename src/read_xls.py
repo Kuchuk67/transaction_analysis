@@ -4,7 +4,7 @@ import pandas as pd
 from typing import Iterable
 
 
-def read_xls(file_name: str) -> Iterable:
+def read_xls(file_name: str) -> (str, Iterable):
     '''
     Читает файл xlsx c транзакциями,
     - Замена NAN на пробелы
@@ -13,7 +13,7 @@ def read_xls(file_name: str) -> Iterable:
     Пример:
     status,x = read_xls('operations.xlsx')
     :param file_name:
-    :return: status: OK при успехе или описание ошибки
+    :return: status: Ok при успехе или описание ошибки
     DataFrame: с данными или None
     '''
     path_to_file = os.path.join(PATH_HOME, "data", file_name)
@@ -48,7 +48,7 @@ def read_xls(file_name: str) -> Iterable:
     # проверка наличия нужных колонок
     important_columns = ["transaction_date", "status", "amount"]
     if set(important_columns).issubset(excel_data.columns):
-        status = 'ОК'
+        status = 'Ok'
     else:
         status = 'not important columns'
         excel_data = None

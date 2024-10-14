@@ -47,5 +47,6 @@ data_xls_result = pd.DataFrame(
 def test_read_xls() -> None:
     mock_random = Mock(return_value=data_xls)
     pd.read_excel = mock_random
-    result = read_xls("my_file.xls")
+    status,result = read_xls("my_file.xls")
+    assert status == 'Ok'
     assert result.equals(data_xls_result)
