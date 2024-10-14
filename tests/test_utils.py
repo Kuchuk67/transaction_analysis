@@ -1,6 +1,8 @@
-from src.read_xls import read_xls
+from src.utils import read_xls,financial_period
 import pandas as pd
 from unittest.mock import Mock
+from freezegun import freeze_time
+import pytest
 
 data_xls = pd.DataFrame(
     {
@@ -50,3 +52,32 @@ def test_read_xls() -> None:
     status,result = read_xls("my_file.xls")
     assert status == 'Ok'
     assert result.equals(data_xls_result)
+
+
+
+
+
+@freeze_time("Jan 14th, 2012")
+def test_financial_period_freez():
+    assert financial_period() == ('01.01.2012', '14.01.2012')
+    assert financial_period('sfgsdf','ddfdf') == ('01.01.2012', '14.01.2012')
+
+
+@pytest.mark.parametrize(
+    "data_start, data_end, period",
+    [
+        ('07.10.2024', '12.10.2024','W'),
+        ('28.02.2023', '29.02.2024','y'),
+        ('29.11.2023', '29.02.2024','3m'),
+        ('01.01.1900', '29.02.2024','all'),
+        ('01.10.2024', '29.10.2024',''),
+
+    ],
+)
+def test_financial_period(data_start, data_end, period) -> None:
+    result = financial_period(data_end, period)
+    assert result == (data_start, data_end)
+
+
+
+
