@@ -8,7 +8,7 @@ import datetime
 def read_xls(file_name: str) -> (str, Iterable):
     '''
     Читает файл xlsx c транзакциями,
-    - Отдает только статус == 'OK'
+    - Отдает транзакции только со статусом == 'OK'
     - Замена NAN на пробелы
     - Переименовывает столбцы на английский
     - Проверяет наличие нужных колонок
@@ -49,7 +49,7 @@ def read_xls(file_name: str) -> (str, Iterable):
 
     excel_data.rename(columns=dict_translation_head, inplace=True)
 
-    print(excel_data)
+    #print(excel_data)
     # проверка наличия нужных колонок
     important_columns = ["transaction_date", "status", "amount"]
     if set(important_columns).issubset(excel_data.columns):
@@ -141,7 +141,4 @@ def filter_transaction(transactions: list, data_start: str, data_end: str) -> li
     return transactions_filter_data
 
 
-status,x = read_xls('operations.xlsx')
-#print(x[0])
-q = filter_transaction(x,'14.11.2021','14.11.2021')
-print(*q, sep='\n')
+
