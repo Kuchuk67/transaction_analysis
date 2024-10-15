@@ -1,20 +1,10 @@
 from src.utils import read_xls, financial_period, data_formater, filter_transaction
-import json
-from config import PATH_HOME
+import requests
+from config import JSON_SETTING
 
-def events():
-    file_name ='user_settings.json'
-    path_to_file = os.path.join(PATH_HOME, "data", file_name)
-    with open(path_to_file) as f:
-        data = json.load(f)
 
-    print(data)
 
-'''Курс валют.'''
 
-'''Стоимость акций'''
-
-events()
 
 
 
@@ -99,6 +89,23 @@ def total_receipt(transactions: list) -> float:
 
 
 
+def exchange_rate()->dict:
+    exchange:dict = {}
+    url = 'https://www.cbr-xml-daily.ru/daily_json.js'
+    response = requests.get(url)
+    if response.status_code != 200:
+        return False
+    data_dict = response.json()
+    x = data_dict.get('Valute').get('USD').get('Value')
+    for currency_code in JSON_SETTING['user_currencies']:
+        exchange[currency_code] = round(data_dict.get('Valute').get(currency_code).get('Value'),2)
+    print(exchange)
+    return exchange
+
+def share_price()->list:
+    pass
+    #print(JSON_SETTING['user_stocks])
+
 #status, x = read_xls('operations.xlsx')
 
 #q = filter_transaction(x, '02.10.2021', '04.11.2021')
@@ -115,3 +122,17 @@ def total_receipt(transactions: list) -> float:
 
 #w = transactions_to_cash(q)
 #print(w)
+
+
+
+def events():
+    # Настройки для пользователя
+    print(JSON_SETTING)
+
+'''Курс валют.'''
+
+'''Стоимость акций'''
+
+exchange_rate()
+
+share_price()
