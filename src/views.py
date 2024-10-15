@@ -1,6 +1,13 @@
 from src.utils import read_xls, financial_period, data_formater, filter_transaction
 import requests
 from config import JSON_SETTING
+import os
+import json
+from dotenv import load_dotenv
+
+# Загрузка переменных из .env-файла
+load_dotenv()
+API_KEY = os.getenv("API_KEY")
 
 
 
@@ -90,6 +97,7 @@ def total_receipt(transactions: list) -> float:
 
 
 def exchange_rate()->dict:
+    '''Курс валют.'''
     exchange:dict = {}
     url = 'https://www.cbr-xml-daily.ru/daily_json.js'
     response = requests.get(url)
@@ -102,18 +110,32 @@ def exchange_rate()->dict:
     print(exchange)
     return exchange
 
-def share_price()->list:
-    pass
-    #print(JSON_SETTING['user_stocks])
+
+def share_price() -> dict:
+    '''Стоимость акций'''
+    # w = transactions_by_category(q, expenses=True)
+    # print(w)
+
+    # url = f"https://api.marketstack.com/v1/intraday?access_key={API_KEY}"
+    # querystring = {"symbols": ','.join(JSON_SETTING['user_stocks'])}
+    # response = requests.get(url, params=querystring)
+    # share_price_all = response.json()
+    with open('output.json') as f:
+        share_price_all = json.load(f)
+
+    dict_share_price = {}
+    for code_share in JSON_SETTING['user_stocks']:
+        for share_price in share_price_all.get('data'):
+            if share_price.get("symbol", 0) == code_share:
+                dict_share_price[code_share] = share_price.get('close', 0)
+    return dict_share_price
+
 
 #status, x = read_xls('operations.xlsx')
 
 #q = filter_transaction(x, '02.10.2021', '04.11.2021')
 
 #w = transactions_by_category(q)
-#print(w)
-
-#w = transactions_by_category(q, expenses=True)
 #print(w)
 
 #w = total_expenses(q)
@@ -129,10 +151,8 @@ def events():
     # Настройки для пользователя
     print(JSON_SETTING)
 
-'''Курс валют.'''
 
-'''Стоимость акций'''
 
-exchange_rate()
 
-share_price()
+#exchange_rate()
+print(share_price())
