@@ -12,11 +12,7 @@ API_KEY = os.getenv("API_KEY")
 
 
 
-
-
-
-
-def transactions_by_category(transactions: dict, expenses: bool = True) -> list:
+def transactions_by_category(transactions: list, expenses: bool = True) -> list:
     ''' Раздел «Основные», в котором траты(поступления) по категориям отсортированы по убыванию.
     Данные предоставляются по 7 категориям с наибольшими тратами
     (поступления  не ограниченно количеством категорий),
@@ -24,8 +20,9 @@ def transactions_by_category(transactions: dict, expenses: bool = True) -> list:
     by_category: dict[str, float] = {} # суммированные расходы по категориям
     by_category_sort: list = []  # отсортированные суммированные расходы по категориям
 
+    # циклом берем из транзакций суммы и названия категорий
     for transaction in transactions:
-        # циклом берем из транзакций суммы и названия категорий
+
         amount = round(float(transaction.get('payment_amount')), 2)
         category_in_tr = transaction.get('category')
 
@@ -59,7 +56,7 @@ def transactions_by_category(transactions: dict, expenses: bool = True) -> list:
     if expenses:
         sum_other = [x[1] for x in by_category_sort[7:] ]
         by_category_result = by_category_sort[:7]
-        by_category_result.append(('Другое', sum(sum_other)))
+        by_category_result.append(('Остальное', sum(sum_other)))
     else:
     # в пополнениях все подряд
         by_category_result = by_category_sort
@@ -131,18 +128,22 @@ def share_price() -> dict:
     return dict_share_price
 
 
-#status, x = read_xls('operations.xlsx')
+status, x = read_xls('operations.xlsx')
 
-#q = filter_transaction(x, '02.10.2021', '04.11.2021')
 
-#w = transactions_by_category(q)
+
+q = filter_transaction(x, '02.10.2021', '04.11.2021')
+#print(type(q))
+
+
+w = transactions_by_category(q,False)
+print(w)
+
+w = total_expenses(q)
 #print(w)
 
-#w = total_expenses(q)
-#print(w)
 
-
-#w = transactions_to_cash(q)
+w = transactions_to_cash(q)
 #print(w)
 
 
@@ -155,4 +156,4 @@ def events():
 
 
 #exchange_rate()
-print(share_price())
+#print(share_price())
