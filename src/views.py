@@ -98,13 +98,14 @@ def exchange_rate()->dict:
     exchange:dict = {}
     url = 'https://www.cbr-xml-daily.ru/daily_json.js'
     response = requests.get(url)
+    #print(response.json())
     if response.status_code != 200:
         return False
     data_dict = response.json()
     x = data_dict.get('Valute').get('USD').get('Value')
     for currency_code in JSON_SETTING['user_currencies']:
         exchange[currency_code] = round(data_dict.get('Valute').get(currency_code).get('Value'),2)
-    print(exchange)
+    #print(exchange)
     return exchange
 
 
@@ -113,47 +114,114 @@ def share_price() -> dict:
     # w = transactions_by_category(q, expenses=True)
     # print(w)
 
-    # url = f"https://api.marketstack.com/v1/intraday?access_key={API_KEY}"
-    # querystring = {"symbols": ','.join(JSON_SETTING['user_stocks'])}
-    # response = requests.get(url, params=querystring)
-    # share_price_all = response.json()
-    with open('output.json') as f:
+    #url = f"https://api.marketstack.com/v1/intraday?access_key={API_KEY}"
+    #querystring = {"symbols": ','.join(JSON_SETTING['user_stocks'])}
+    #response = requests.get(url, params=querystring)
+    #share_price_all = response.json()
+
+    with open('data_marketstack.json') as f:
         share_price_all = json.load(f)
 
+
+    if share_price_all.get('error', '') != '':
+        return {}
+
+    #print(share_price_all)
+
     dict_share_price = {}
+    # цикл по кодам акций пользователя
     for code_share in JSON_SETTING['user_stocks']:
+        # ищем акцию в ответе jSON - идем по словарю json
         for share_price in share_price_all.get('data'):
             if share_price.get("symbol", 0) == code_share:
-                dict_share_price[code_share] = share_price.get('close', 0)
+                if share_price.get('close', None):
+                    dict_share_price[code_share] = share_price.get('close')
     return dict_share_price
 
-
-status, x = read_xls('operations.xlsx')
-
+#status, x = read_xls('operations.xlsx')
 
 
-q = filter_transaction(x, '02.10.2021', '04.11.2021')
+
+#q = filter_transaction(x, '02.10.2021', '04.11.2021')
 #print(type(q))
 
 
-w = transactions_by_category(q,False)
-print(w)
+#w = transactions_by_category(q,False)
+#print(w)
 
-w = total_expenses(q)
+#w = total_expenses(q)
 #print(w)
 
 
-w = transactions_to_cash(q)
+#w = transactions_to_cash(q)
 #print(w)
 
 
 
-def events():
-    # Настройки для пользователя
-    print(JSON_SETTING)
+def events(current_date='', period='') -> dict:
+
+    date_start, date_end = financial_period(current_date, period)
+
+
+    status, transactions_file = read_xls('operations.xlsx')
+    if status != 'Ok':
+        result = {}
+        return json.dumps(result)
+
+
+    transactions = filter_transaction(transactions_file, date_start, date_end)
+
+
+    # все данные получены.
+    # начинаем выборку данных.
+
+    # траты
+    result = {}
+    result["expenses"] = {}
+    result["expenses"]["total_amount"] = total_expenses(transactions)
+
+
+    list_transactions_by_category = transactions_by_category(transactions, True)
+    result["expenses"]["main"] = []
+    category_one_util = {}
+    for category in list_transactions_by_category:
+        result["expenses"]["main"].append({"category":category[0], "amount":category[1]})
+
+    #print(transactions_to_cash(transactions))
+    list_transactions_to_cash = transactions_to_cash(transactions)
+    result["expenses"]["transfers_and_cash"] = []
+    category_one_util = {}
+    for category in list_transactions_to_cash:
+        result["expenses"]["transfers_and_cash"].append({"category": category[0], "amount": category[1]})
+
+    # Поступления
+    result["income"] = {}
+    result["income"]["total_amount"] = total_receipt(transactions)
+
+    list_transactions_by_category = transactions_by_category(transactions, False)
+    result["income"]["main"] = []
+    category_one_util = {}
+    for category in list_transactions_by_category:
+        result["income"]["main"].append({"category":category[0], "amount":category[1]})
+
+
+    result["currency_rates"] = []
+    exchange = exchange_rate()
+    for key, value in exchange.items():
+        result["currency_rates"].append({"currency":key, "rate":value})
+
+
+    result["stock_prices"] = []
+    stock_prices = share_price()
+    for key, value in stock_prices.items():
+        result["stock_prices"].append({"stock": key, "price": value})
 
 
 
+    return json.dumps(result, ensure_ascii=False, indent=4)
 
-#exchange_rate()
-#print(share_price())
+
+
+if __name__ == "__main__":
+    print(events('04.11.2021'))
+
