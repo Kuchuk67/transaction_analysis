@@ -5,7 +5,7 @@ from typing import Iterable
 from dateutil.relativedelta import relativedelta
 import datetime
 
-def read_xls(file_name: str) -> (str, Iterable):
+def read_xls(file_name: str, df = False) -> (str, Iterable):
     '''
     Читает файл xlsx c транзакциями,
     - Отдает транзакции только со статусом == 'Ok'
@@ -14,10 +14,11 @@ def read_xls(file_name: str) -> (str, Iterable):
     - Проверяет наличие нужных колонок
     -
     Пример:
-    status,x = read_xls('operations.xlsx')
-    :param file_name:
+    status,x = read_xls('operations.xlsx', df = False)
+    :param file_name:  df = False(по умолчаию)
     :return: status: Ok при успехе или описание ошибки
-    Словарь с данными или None
+    df = False Словарь с данными или None
+    df = True  DataFrame с данными или None
     '''
     path_to_file = os.path.join(PATH_HOME, "data", file_name)
     try:
@@ -55,7 +56,11 @@ def read_xls(file_name: str) -> (str, Iterable):
     if set(important_columns).issubset(excel_data.columns):
         status = 'Ok'
         #excel_data
-        dict_data = excel_data.loc[ excel_data.status == 'OK' ].to_dict(orient="records")
+        if df:
+            dict_data = excel_data.loc[ excel_data.status == 'OK' ]
+
+        else:
+            dict_data = excel_data.loc[ excel_data.status == 'OK' ].to_dict(orient="records")
 
     else:
         status = 'Error: not important columns'

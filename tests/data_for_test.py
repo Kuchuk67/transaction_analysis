@@ -1013,3 +1013,64 @@ def mock_2() -> dict:
          'date': '2024-10-11T19:00:00+0000', 'symbol': 'AMZN', 'exchange': 'IEXG'},
         {'open': 162.19, 'high': 163.84, 'low': 161.24, 'last': 163.5, 'close': 162.08, 'volume': 217483.0,
          'date': '2024-10-11T19:00:00+0000', 'symbol': 'GOOGL', 'exchange': 'IEXG'}]}
+
+
+
+def event_json() ->str:
+    return {
+    "expenses": {
+        "total_amount": -25100,
+        "main": [
+            {
+                "category": "Пополнения",
+                "amount": -25100.0
+            },
+            {
+                "category": "Остальное",
+                "amount": 0
+            }
+        ],
+        "transfers_and_cash": [
+            {
+                "category": "cash",
+                "amount": 0
+            },
+            {
+                "category": "transfer",
+                "amount": 0
+            }
+        ]
+    },
+    "income": {
+        "total_amount": 0,
+        "main": []
+    },
+    "currency_rates": [
+        {
+            "currency": "USD",
+            "rate": 97.15
+        },
+        {
+            "currency": "EUR",
+            "rate": 105.76
+        }
+    ],
+    "stock_prices": [
+        {
+            "stock": "AAPL",
+            "price": 229.04
+        },
+        {
+            "stock": "AMZN",
+            "price": 186.65
+        },
+        {
+            "stock": "GOOGL",
+            "price": 162.08
+        },
+        {
+            "stock": "TSLA",
+            "price": 238.77
+        }
+    ]
+}

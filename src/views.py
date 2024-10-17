@@ -114,13 +114,13 @@ def share_price() -> dict:
     # w = transactions_by_category(q, expenses=True)
     # print(w)
 
-    #url = f"https://api.marketstack.com/v1/intraday?access_key={API_KEY}"
-    #querystring = {"symbols": ','.join(JSON_SETTING['user_stocks'])}
-    #response = requests.get(url, params=querystring)
-    #share_price_all = response.json()
+    url = f"https://api.marketstack.com/v1/intraday?access_key={API_KEY}"
+    querystring = {"symbols": ','.join(JSON_SETTING['user_stocks'])}
+    response = requests.get(url, params=querystring)
+    share_price_all = response.json()
 
-    with open('data_marketstack.json') as f:
-        share_price_all = json.load(f)
+    #with open('data_marketstack.json') as f:
+    #    share_price_all = json.load(f)
 
 
     if share_price_all.get('error', '') != '':
@@ -158,7 +158,7 @@ def share_price() -> dict:
 
 
 
-def events(current_date='', period='') -> dict:
+def events(current_date='', period='') -> str:
 
     date_start, date_end = financial_period(current_date, period)
 
@@ -223,5 +223,5 @@ def events(current_date='', period='') -> dict:
 
 
 if __name__ == "__main__":
-    print(events('04.11.2021'))
+    print(events('16.09.2021'))
 
