@@ -17,7 +17,7 @@ def read_xls(file_name: str) -> (str, Iterable):
     status,x = read_xls('operations.xlsx')
     :param file_name:
     :return: status: Ok при успехе или описание ошибки
-    DataFrame: с данными или None
+    Словарь с данными или None
     '''
     path_to_file = os.path.join(PATH_HOME, "data", file_name)
     try:
@@ -51,14 +51,14 @@ def read_xls(file_name: str) -> (str, Iterable):
 
     #print(excel_data)
     # проверка наличия нужных колонок
-    important_columns = ["transaction_date", "status", "amount"]
+    important_columns = ["transaction_date", "status", "payment_amount", "category","cashback"]
     if set(important_columns).issubset(excel_data.columns):
         status = 'Ok'
         #excel_data
         dict_data = excel_data.loc[ excel_data.status == 'OK' ].to_dict(orient="records")
 
     else:
-        status = 'not important columns'
+        status = 'Error: not important columns'
         dict_data = None
 
     return status, dict_data
