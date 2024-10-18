@@ -1,4 +1,4 @@
-from src.utils import read_xls, financial_period, filter_transaction
+from src.utils import read_xls, financial_period, filter_transaction, workday_or_weekday
 import pandas as pd
 from unittest.mock import Mock
 from freezegun import freeze_time
@@ -103,3 +103,13 @@ result_financial_period = [{'transaction_date': '15.10.2022 18:58:43'},
 def test_filter_transaction() -> None:
     result = filter_transaction(data_financial_period, '01.01.2022', '01.12.2022')
     assert result == result_financial_period
+
+
+def test_workday_or_weekday() -> None:
+    assert workday_or_weekday('15.10.2024')
+    assert workday_or_weekday('16.10.2024')
+    assert workday_or_weekday('17.10.2024')
+    assert workday_or_weekday('18.10.2024')
+    assert not workday_or_weekday('19.10.2024')
+    assert not workday_or_weekday('20.10.2024')
+    assert workday_or_weekday('21.10.2024')

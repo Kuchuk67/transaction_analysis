@@ -147,3 +147,18 @@ def filter_transaction(transactions: list, data_start: str, data_end: str) -> li
 
 
 
+def workday_or_weekday(data: str) -> bool:
+    ''' Если рабочий день - True
+    если выходной -  False
+    принимает на сход str: например: 01.01.2021'''
+    try:
+        data_iso = datetime.datetime.strptime(data, "%d.%m.%Y")
+    except ValueError:
+        return True
+    if data_iso.weekday() > 4:
+        return False
+    else:
+        return  True
+
+
+print(workday_or_weekday('21.10.2024'))
