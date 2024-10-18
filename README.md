@@ -28,14 +28,14 @@
 
 
 ### Функция read_xls
-Читает файл xlsx c транзакциями и возвращает DataFrame
+Читает файл xlsx c транзакциями и возвращает DataFrame или словарь
 
 - Замена NAN на пробелы
 - Переименовывает столбцы на английский
 - Проверяет наличие нужных колонок
 
 
-Пример:     status,x = read_xls('operations.xlsx')
+Пример:     status,x = read_xls('operations.xlsx',df = False)
 
 #### Параметры:
 
@@ -44,7 +44,8 @@
 :return: 
 
 - status: Ok при успехе или описание ошибки
-- DataFrame: с данными или None
+- df = False Словарь с данными или None
+  df = True  DataFrame с данными или None
 
 
 
